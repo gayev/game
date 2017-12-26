@@ -44,7 +44,26 @@ int main()
 	Image BulletImage;
 	BulletImage.loadFromFile("images/bullet.png");
 
-	
+	SoundBuffer shootBuffer;
+	shootBuffer.loadFromFile("shoot.ogg");
+	Sound shoot(shootBuffer);
+
+	SoundBuffer killBuffer;
+	killBuffer.loadFromFile("kill.ogg");
+	Sound kill(killBuffer);
+
+	SoundBuffer winBuffer;
+	winBuffer.loadFromFile("win.ogg");
+    Sound win(winBuffer);
+
+	SoundBuffer loseBuffer;
+	loseBuffer.loadFromFile("lose.ogg");
+    Sound lose(loseBuffer);
+
+	Music music;
+    music.openFromFile("music.ogg");
+    music.play();
+
 	Player p(heroImage, 50, 50, 48, 48, "Player1");
 
 	std::list<Entity*>  enemies; 
@@ -90,6 +109,7 @@ while (window.isOpen())
 				{
 					if (!p.health==0){
 		Bullets.push_back(new Bullet(BulletImage, p.x, p.y, 24, 24, "Bullet", p.state));
+					shoot.play();
 					}
 				}
 			}
@@ -113,6 +133,8 @@ while (window.isOpen())
 		for (it = enemies.begin(); it != enemies.end(); it++){
 		if ((p.getRect().intersects((*it)->getRect())) && ((*it)->name == "EasyEnemy"))			
 		            {p.health = 0;
+					music.pause();
+					lose.play();}
 		}
         }
 
@@ -124,9 +146,13 @@ for (it = Bullets.begin(); it != Bullets.end(); it++){
       { (*it_enemy)->health-=50;
         (*it)->health=0;
         (*it)->life=false;
+		kill.play();}
 }
 }
 
+if ( kills==EnemyCount){
+			win.play();
+			music.pause();}
 
 		window.clear();
 
