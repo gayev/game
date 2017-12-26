@@ -108,6 +108,24 @@ while (window.isOpen())
 			(*it)->update(time); 
 		}
 
+			// Столкновение врага с игроком
+        if (p.life == true){
+		for (it = enemies.begin(); it != enemies.end(); it++){
+		if ((p.getRect().intersects((*it)->getRect())) && ((*it)->name == "EasyEnemy"))			
+		            {p.health = 0;
+		}
+        }
+
+	
+		// Проверяем попадание во врага
+for (it_enemy = enemies.begin(); it_enemy != enemies.end(); it_enemy++){
+for (it = Bullets.begin(); it != Bullets.end(); it++){
+    if ((*it_enemy)->getRect().intersects((*it)->getRect()))
+      { (*it_enemy)->health-=50;
+        (*it)->health=0;
+        (*it)->life=false;
+}
+}
 
 
 		window.clear();
