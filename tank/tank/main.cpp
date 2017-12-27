@@ -71,7 +71,7 @@ int main()
 	std::list<Entity*>::iterator it; 
 	std::list<Entity*>::iterator it_enemy; 
 	 
-	const int EnemyCount = 10;	
+	const int EnemyCount = 15;	
 	int enemiesCount = 0;
 	int kills = 0;
 
