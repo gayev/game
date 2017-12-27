@@ -1,0 +1,51 @@
+#include <SFML/Graphics.hpp>
+#include "entity.h"
+#include "enbul.h"
+#include "map.h"
+using namespace sf;
+	Enemy_Bul::Enemy_Bul(Image &image, float X, float Y, int W, int H, std::string  Name, int dir) :Entity(image, X, Y, W, H, Name){
+		x = X;
+		y = Y;
+		direction = dir;
+		speed = 0.5;
+		w = h = 24;
+		life = true;
+	}
+
+	void Enemy_Bul::randomBulGenerate(){
+srand(time(0));	
+}
+
+	void Enemy_Bul::update(float time)
+	{
+		switch (direction)
+		{
+		case 0: dx = -speed; dy = 0;   break;// state = left
+		case 1: dx = speed; dy = 0;   break;// state = right
+		case 2: dx = 0; dy = -speed;   break;// state = up
+		case 3: dx = 0; dy = speed;   break;// state = down
+		}
+
+		if (life){
+			x += dx*time;//само движение пули по х
+			y += dy*time;//по у
+
+		if (x <= 0) x = 20;// задержка пули в левой стене, чтобы при проседании кадров она случайно не вылетела за предел карты и не было ошибки (сервер может тормозить!)
+		if (y <= 0) y = 20;
+
+		if (x >= 1366) x = 1346;// задержка пули в правой стене, чтобы при проседании кадров она случайно не вылетела за предел карты и не было ошибки (сервер может тормозить!)
+		if (y >= 768) y = 748;
+				
+		}
+
+
+			for (int i = y / 32; i < (y + h) / 32; i++)//проходимся по элементам карты
+				for (int j = x / 32; j < (x + w) / 32; j++)
+				{
+					if (TileMap[i][j] == '0')//если элемент наш тайлик земли, то
+						life = false;// то пуля умирает
+				}
+
+			sprite.setPosition(x + w / 2, y + h / 2);//задается позицию пули
+		}
+	

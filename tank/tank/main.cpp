@@ -8,6 +8,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "enbul.h"
 
 int main()
 	
@@ -44,6 +45,9 @@ int main()
 	Image BulletImage;
 	BulletImage.loadFromFile("images/bullet.png");
 
+	Image EnemyBulImage;
+	EnemyBulImage.loadFromFile("images/bullet.png");
+
 	SoundBuffer shootBuffer;
 	shootBuffer.loadFromFile("shoot.ogg");
 	Sound shoot(shootBuffer);
@@ -68,8 +72,10 @@ int main()
 
 	std::list<Entity*>  enemies; 
 	std::list<Entity*>  Bullets; 
+	std::list<Entity*>  EnemyBuls;
 	std::list<Entity*>::iterator it; 
 	std::list<Entity*>::iterator it_enemy; 
+    std::list<Entity*>::iterator it_be; 
 	 
 	const int EnemyCount = 15;	
 	int enemiesCount = 0;
@@ -85,10 +91,10 @@ int main()
 		enemies.push_back(new Enemy(easyEnemyImage, xr, yr, 48, 48, "EasyEnemy"));
 		enemiesCount += 1;
 	}
-
+	int createObjectForBulTimer = 0;
 	
 while (window.isOpen())
-{
+	{
 	float time = clock.getElapsedTime().asMicroseconds();
 
 	if (p.life) gameTime = gameTimeClock.getElapsedTime().asSeconds();
@@ -96,7 +102,6 @@ while (window.isOpen())
 		clock.restart();
 		time = time / 800;
 
-		
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -121,11 +126,26 @@ while (window.isOpen())
             (*it_enemy)->update(time);
 							
 		}
+
+		for (it_enemy = enemies.begin(); it_enemy != enemies.end(); it_enemy++)
+				{	createObjectForBulTimer += time;
+				if (createObjectForBulTimer>1000){
+					void randomBulGenerate();
+					EnemyBuls.push_back(new Enemy_Bul(EnemyBulImage, (*it_enemy)->x, (*it_enemy)->y, 24, 24, "BulletE", (*it_enemy)->speed));
+					createObjectForBulTimer = 0;
+}
+				}
 	
 		
 		for (it = Bullets.begin(); it != Bullets.end(); it++)
 		{
 			(*it)->update(time); 
+		}
+
+		for (it_be = EnemyBuls.begin(); it_be != EnemyBuls.end(); it_be++)
+		{
+			
+			(*it_be)->update(time);
 		}
 
 			// Столкновение врага с игроком
@@ -148,6 +168,18 @@ for (it = Bullets.begin(); it != Bullets.end(); it++){
         (*it)->life=false;
 		kill.play();}
 }
+}
+
+	//Попадание пули в игрока
+if (p.life == true){
+		for (it_be = EnemyBuls.begin(); it_be != EnemyBuls.end(); it_be++){
+		if ((p.getRect().intersects((*it_be)->getRect())) && ((*it_be)->name == "BulletE"))			
+		{
+					p.health-=10;
+					(*it_be)->life=false;
+					
+		}
+		}
 }
 
 if ( kills==EnemyCount){
@@ -217,7 +249,18 @@ for (int i = 0; i < HEIGHT_MAP; i++)
 		if ((*it)-> life == false)	{ it = Bullets.erase(it); } 
 			else  it++;		
 	}
-
+		//рисуем пули врага
+			for (it_be = EnemyBuls.begin(); it_be != EnemyBuls.end(); it_be++)
+		{
+			
+			if ((*it_be)->life) 
+			window.draw((*it_be)->sprite); 
+		}
+for (it_be = EnemyBuls.begin(); it_be != EnemyBuls.end(); )
+	{
+		if ((*it_be)-> life == false)	{ it_be = EnemyBuls.erase(it_be); } 
+			else  it_be++;		
+	}
 
 		window.display();
 		
